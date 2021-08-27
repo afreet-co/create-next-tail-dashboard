@@ -1,0 +1,17 @@
+{
+  "name": "create-next-tail-dashboard",
+  "description": "An admin dashboard built on nextjs with tailwindcss.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "bin":{
+    "create-next-tail-dashboard":"index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": ["tailwind","nextjs","runner"],
+  "author": {
+    "name": "Afreet Co"
+  },
+  "license": "MIT"
+}
