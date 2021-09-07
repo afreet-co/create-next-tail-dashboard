@@ -1,7 +1,7 @@
 {
   "name": "create-next-tail-dashboard",
   "description": "An admin dashboard built on nextjs with tailwindcss.",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "index.js",
   "bin": {
     "create-next-tail-dashboard": "index.js"
