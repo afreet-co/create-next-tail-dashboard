@@ -73,15 +73,12 @@ const renameFile = (from, to) => fs.renameSync(from, to);
     `${directoryName}/package.json`,
     JSON.stringify(packageJson, null, 2)
   );
-  // Installing the dependencies.
-  console.log("Now, installing the dependencies...");
-  await runCommand("npm", ["i"], {
-    cwd: path.join(process.cwd(), directoryName),
-  });
 
-  console.log(`Application generated is ready to use.
+  console.log(`
+Application generated is ready to use.
 To get started, 
 - cd ${directoryName}
+- npm i
 - npm run dev
   `);
 })();
