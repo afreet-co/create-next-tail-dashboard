@@ -2,22 +2,47 @@
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
-function runCommand(command, args, options = undefined) {
-  const spawned = spawn(command, args, options);
 
+const runCommand = (command, args, options = undefined) => {
+  const spawned = spawn(command, args, options);
   return new Promise((resolve) => {
     spawned.stdout.on("data", (data) => {
-      console.log(data.toString());
+      console.log(String.toString(data));
     });
-
     spawned.stderr.on("data", (data) => {
       console.error(data.toString());
     });
-
     spawned.on("close", () => {
       resolve();
     });
   });
+}
+var isWin = process.platform === "win32";
+
+const removeFolder = async (directoryPath) => {
+  if (isWin) {
+    await runCommand("rmdir", ["/s/q", directoryPath]);
+  }
+  else {
+    await runCommand("rm", ["-rf", directoryPath]);
+  }
+}
+const removeFile = async (filePath) => {
+
+  if (isWin) {
+    await runCommand("del", ["/f", filePath]);
+  }
+  else {
+    await runCommand("rm", ["-r", filePath]);
+  }
+}
+const renameFile = async (from, to) => {
+  if (isWin) {
+    await runCommand("Ren", [from, to]);
+  }
+  else {
+    await runCommand("mv", [from, to]);
+  }
 }
 
 (async () => {
@@ -33,16 +58,21 @@ function runCommand(command, args, options = undefined) {
   // Clone the repository into the given name
   await runCommand("git", ["clone", repositoryUrl, directoryName]);
   // Removing the .git folder
-  await runCommand("rm", ["-rf", `${directoryName}/.git`]);
-  await runCommand("rm", ["-rf", `${directoryName}/.github`]);
-  //1. Removing the readme, package-lock.json
-  await runCommand("rm", ["-r", `${directoryName}/README.md`]);
-  await runCommand("rm", ["-r", `${directoryName}/package-lock.json`]);
-  //2. rename .env.example to .env
-  await runCommand("mv", [
-    `${directoryName}/.env.example`,
-    `${directoryName}/.env.local`,
-  ]);
+  if (process.platform === 'win32') {
+
+  } else {
+    await removeFolder(`${directoryName}/.git`);
+    await removeFolder(`${directoryName}/.github`);
+    //1. Removing the readme, package-lock.json
+    await removeFile(`${directoryName}/README.md`);
+    await removeFile(`${directoryName}/package-lock.json`);
+    //2. rename .env.example to .env
+    await renameFile(
+      `${directoryName}/.env.example`,
+      `${directoryName}/.env.local`,
+    )
+
+  }
 
   //3. get the json from package.json
   const packageJsonRaw = fs.readFileSync(path.join(process.cwd(), directoryName, 'package.json'));
@@ -52,9 +82,9 @@ function runCommand(command, args, options = undefined) {
   packageJson.author = "";
   packageJson.keywords = [];
   packageJson.version = "1.0.0";
-  packageJson.description = "An admin dashboard built on nextjs with tailwindcss.";
+  packageJson.description = "An Admin dashboard built on next.js with tailwindCSS.";
   // and again write it again into package.json
-  await runCommand("rm", ["-r", `${directoryName}/package.json`]);
+  await removeFile(`${directoryName}/package.json`);
   fs.writeFileSync(
     `${directoryName}/package.json`,
     JSON.stringify(packageJson, null, 2)
