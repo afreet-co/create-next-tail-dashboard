@@ -18,15 +18,19 @@ const runCommand = (command, args, options = undefined) => {
   });
 };
 
-const isWin = process.platform === "win32";
+// const isWin = process.platform === "win32";
 
-const removeFolder = async (directoryPath) => {
-  if (isWin) {
-    await runCommand("rmdir", ["/s/q/f", directoryPath]);
-  } else {
-    await runCommand("rm", ["-rf", directoryPath]);
-  }
-};
+// const removeFolder = async (directoryPath) => {
+//   if (isWin) {
+//     await runCommand("rmdir", ["/s/q/f", directoryPath]);
+//   } else {
+//     await runCommand("rm", ["-rf", directoryPath]);
+//   }
+// };
+
+const removeFolder = (directoryPath) =>
+  fs.rmdirSync(directoryPath, { recursive: true, force: true });
+
 const removeFile = (filePath) => fs.unlinkSync(filePath);
 const renameFile = (from, to) => fs.renameSync(from, to);
 
@@ -71,7 +75,7 @@ const renameFile = (from, to) => fs.renameSync(from, to);
   );
   // Installing the dependencies.
   console.log("Now, installing the dependencies...");
-  runCommand("npm", ["i"], {
+  await runCommand("npm", ["i"], {
     cwd: path.join(process.cwd(), directoryName),
   });
 
