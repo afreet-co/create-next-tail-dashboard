@@ -18,7 +18,15 @@ const runCommand = (command, args, options = undefined) => {
   });
 };
 
-const removeFolder = (directoryPath) => fs.rmdirSync(directoryPath);
+const isWin = process.platform === "win32";
+
+const removeFolder = async (directoryPath) => {
+  if (isWin) {
+    await runCommand("rmdir", ["/s/q/f", directoryPath]);
+  } else {
+    await runCommand("rm", ["-rf", directoryPath]);
+  }
+};
 const removeFile = (filePath) => fs.unlinkSync(filePath);
 const renameFile = (from, to) => fs.renameSync(from, to);
 
@@ -35,8 +43,8 @@ const renameFile = (from, to) => fs.renameSync(from, to);
   // Clone the repository into the given name
   await runCommand("git", ["clone", repositoryUrl, directoryName]);
   // Removing the .git folder
-  removeFolder(`${directoryName}/.git`);
-  removeFolder(`${directoryName}/.github`);
+  await removeFolder(`${directoryName}/.git`);
+  await removeFolder(`${directoryName}/.github`);
   //1. Removing the readme, package-lock.json
   removeFile(`${directoryName}/README.md`);
   removeFile(`${directoryName}/package-lock.json`);
@@ -63,7 +71,7 @@ const renameFile = (from, to) => fs.renameSync(from, to);
   );
   // Installing the dependencies.
   console.log("Now, installing the dependencies...");
-  await runCommand("npm", ["i"], {
+  runCommand("npm", ["i"], {
     cwd: path.join(process.cwd(), directoryName),
   });
 
