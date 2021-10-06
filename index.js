@@ -18,16 +18,6 @@ const runCommand = (command, args, options = undefined) => {
   });
 };
 
-// const isWin = process.platform === "win32";
-
-// const removeFolder = async (directoryPath) => {
-//   if (isWin) {
-//     await runCommand("rmdir", ["/s/q/f", directoryPath]);
-//   } else {
-//     await runCommand("rm", ["-rf", directoryPath]);
-//   }
-// };
-
 const removeFolder = (directoryPath) =>
   fs.rmdirSync(directoryPath, { recursive: true, force: true });
 
